@@ -15,15 +15,18 @@ import {
 } from "../screens";
 
 import {
+  MaintenanceChatScreen,
   MaintenanceDashboardScreen,
   MaintenanceJobsScreen,
-  MaintenanceScheduleScreen,
+  MaintenanceNewsScreen,
+  MaintenanceProfileScreen,
 } from "../screens/maintenance";
 
 import {
   AdminDashboardScreen,
   AdminLeaseManagementScreen,
   AdminPaymentsScreen,
+  AdminProfileScreen,
 } from "../screens/admin";
 
 import { Ionicons } from "@expo/vector-icons";
@@ -109,14 +112,14 @@ const MainBottomTabNavigator = ({ userRole }) => {
       News: NewsScreen,
       Payments: PaymentsScreen,
       Messages: MessagesNavigator,
-      Profile: ProfileScreen,
+      Profile: AdminProfileScreen,
     },
     maintenance: {
       Dashboard: MaintenanceDashboardScreen,
       Jobs: MaintenanceJobsScreen,
-      Schedule: MaintenanceScheduleScreen,
-      Messages: MessagesNavigator,
-      Profile: ProfileScreen,
+      News: MaintenanceNewsScreen,
+      Messages: MaintenanceChatScreen,
+      Profile: MaintenanceProfileScreen,
     },
     propertyOwner: {
       Dashboard: AdminDashboardScreen,
@@ -142,6 +145,7 @@ const MainBottomTabNavigator = ({ userRole }) => {
       Schedule: ["calendar", "calendar-outline"],
       Messages: ["chatbubble", "chatbubble-outline"],
       Profile: ["person", "person-outline"],
+      News: ["newspaper", "newspaper-outline"],
     },
     propertyOwner: {
       Dashboard: ["business", "business-outline"],
