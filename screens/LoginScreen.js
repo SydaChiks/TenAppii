@@ -158,23 +158,33 @@ const LoginScreen = ({ navigation }) => {
         behavior={Platform.OS === "ios" ? "padding" : "height"}
         style={tw`flex-1`}
       >
+        {/* Top design element */}
+        <View
+          style={tw`absolute right-0 top-0 w-2/5 h-24 bg-blue-500 rounded-bl-full opacity-80 z-10`}
+        />
+
         <ScrollView
-          contentContainerStyle={tw`flex-grow p-6`}
+          contentContainerStyle={[tw`flex-grow px-4`, { paddingTop: 80 }]}
           showsVerticalScrollIndicator={false}
         >
-          {/* Top design element */}
           <View
-            style={tw`absolute right-0 top-0 w-2/5 h-24 bg-blue-500 rounded-bl-full opacity-80`}
-          />
-
-          <View
-            style={tw`flex-1 p-6 justify-center`}
+            style={tw`flex-1 p-4 justify-center mt-4`}
             style={{ minHeight: height * 0.9 }}
           >
-            <View style={tw`items-center mb-6 mt-12`}>
-              <View style={tw`bg-blue-50 p-4 rounded-full mb-4 shadow-sm`}>
-                <Image source={jpgLogo} style={tw`w-24 h-24 rounded-full `} />
+            <View style={tw`items-center mb-8`}>
+              <View style={tw`bg-blue-50 p-4 rounded-3xl shadow-lg`}>
+                <Image
+                  source={jpgLogo}
+                  style={tw`w-32 h-32`}
+                  resizeMode="contain"
+                />
               </View>
+              <Text style={tw`mt-4 text-2xl font-bold text-gray-800`}>
+                Welcome Back
+              </Text>
+              <Text style={tw`text-gray-500 mt-1`}>
+                Sign in to continue to your account
+              </Text>
             </View>
 
             {/* Quick Login Buttons */}
@@ -312,12 +322,11 @@ const LoginScreen = ({ navigation }) => {
               )}
             </Formik>
           </View>
-
-          {/* Bottom design element */}
-          <View
-            style={tw`absolute left-0 bottom-0 w-1/4 h-20 bg-blue-500 rounded-tr-full opacity-80`}
-          />
         </ScrollView>
+        {/* Bottom design element */}
+        <View
+          style={tw`absolute left-0 bottom-0 w-1/4 h-20 bg-blue-500 rounded-tr-full opacity-80`}
+        />
       </KeyboardAvoidingView>
     </SafeAreaView>
   );

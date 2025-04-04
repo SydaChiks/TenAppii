@@ -15,6 +15,7 @@ import {
 } from "react-native";
 import tw from "twrnc";
 import * as Yup from "yup";
+import { jpgLogo } from "../assets";
 import Button from "../components/Button";
 import Input from "../components/Input";
 
@@ -244,26 +245,26 @@ const SignupScreen = ({ navigation }) => {
       >
         {/* Top design element */}
         <View
-          style={tw`absolute right-0 top-0 w-2/5 h-24 bg-blue-500 rounded-bl-full opacity-80`}
+          style={tw`absolute right-0 top-0 w-2/5 h-24 bg-blue-500 rounded-bl-full opacity-80 z-10`}
         />
 
         <ScrollView
-          contentContainerStyle={tw`flex-grow p-6`}
+          contentContainerStyle={tw`flex-grow p-4`}
           showsVerticalScrollIndicator={false}
         >
           <TouchableOpacity
             onPress={() => navigation.goBack()}
-            style={tw`w-10 h-10 items-center justify-center mt-2`}
+            style={tw`w-10 h-10 items-center justify-center mt-2 -ml-2`}
           >
             <Ionicons name="arrow-back" size={24} color="#333" />
           </TouchableOpacity>
 
-          {/* Logo & Welcome text */}
           <View style={tw`items-center mb-6 mt-4`}>
-            <View style={tw`bg-blue-50 p-4 rounded-full mb-4 shadow-sm`}>
+            <View style={tw`bg-blue-50 p-4 rounded-3xl shadow-lg mb-4`}>
               <Image
-                source={{ uri: "/api/placeholder/120/120" }}
-                style={tw`w-24 h-24 rounded-full`}
+                source={jpgLogo}
+                style={tw`w-32 h-32`}
+                resizeMode="contain"
               />
             </View>
             <Text style={tw`text-3xl font-bold text-center text-gray-800`}>
