@@ -5,16 +5,18 @@ import {
   GroupMessagesScreen,
   // Tenant Screens
   HomeScreen,
-  // Authentication Screens
   LoginScreen,
+  MaintenanceRequestScreen,
   MessagesScreen,
   NewsScreen,
   PaymentsScreen,
   ProfileScreen,
+  RequestDetailsScreen,
   SignupScreen,
 } from "../screens";
 
 import {
+  EditMaintenanceProfileScreen,
   MaintenanceChatScreen,
   MaintenanceDashboardScreen,
   MaintenanceJobsScreen,
@@ -112,7 +114,7 @@ const MainBottomTabNavigator = ({ userRole }) => {
       News: NewsScreen,
       Payments: PaymentsScreen,
       Messages: MessagesNavigator,
-      Profile: AdminProfileScreen,
+      Profile: ProfileScreen,
     },
     maintenance: {
       Dashboard: MaintenanceDashboardScreen,
@@ -126,7 +128,7 @@ const MainBottomTabNavigator = ({ userRole }) => {
       Properties: AdminLeaseManagementScreen,
       Finances: AdminPaymentsScreen,
       Messages: MessagesNavigator,
-      Profile: ProfileScreen,
+      Profile: AdminProfileScreen,
     },
   };
 
@@ -222,6 +224,23 @@ const RootNavigator = () => {
       <RootStack.Screen
         name="EditProfile"
         component={EditProfileScreen}
+        options={{ title: "Edit Profile" }}
+      />
+      <RootStack.Screen
+        name="MaintenanceRequest"
+        component={MaintenanceRequestScreen}
+        options={{ title: "Maintenance Request" }}
+      />
+
+      <RootStack.Screen
+        name="RequestDetails"
+        component={RequestDetailsScreen}
+        options={{ title: "Request Details" }}
+      />
+
+      <RootStack.Screen
+        name="EditMaintenanceProfile"
+        component={EditMaintenanceProfileScreen}
         options={{ title: "Edit Profile" }}
       />
     </RootStack.Navigator>

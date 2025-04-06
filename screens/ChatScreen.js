@@ -17,6 +17,7 @@ import {
 } from "react-native";
 import tw from "twrnc";
 import Card from "../components/Card";
+import { useTheme } from "../context/ThemeContext";
 
 const ChatScreen = ({ route, navigation }) => {
   const { conversation } = route.params;
@@ -25,6 +26,28 @@ const ChatScreen = ({ route, navigation }) => {
   const [showAttachmentOptions, setShowAttachmentOptions] = useState(false);
   const [showInfoPanel, setShowInfoPanel] = useState(false);
   const flatListRef = useRef(null);
+  const { theme } = useTheme();
+
+  const isDark = theme === "dark";
+  // Theme specific styles
+  const styles = {
+    background: isDark ? "bg-gray-900" : "bg-white",
+    statusBarStyle: isDark ? "light-content" : "dark-content",
+    statusBarColor: isDark ? "#121212" : "#f9f9f9",
+    cardBackground: isDark ? "bg-gray-800" : "bg-white",
+    textColor: isDark ? "text-white" : "text-black",
+    subtextColor: isDark ? "text-gray-400" : "text-gray-500",
+    inputBackground: isDark ? "bg-gray-700" : "bg-gray-100",
+    inputText: isDark ? "text-white" : "text-gray-900",
+    borderColor: isDark ? "border-gray-700" : "border-gray-200",
+    modalBackground: isDark ? "bg-gray-800" : "bg-white",
+    iconColor: isDark ? "#90caf9" : "#3498db",
+    sentMessageBg: isDark ? "bg-blue-800" : "bg-blue-500",
+    receivedMessageBg: isDark ? "bg-gray-700" : "bg-gray-200",
+    timeTextColor: isDark ? "text-blue-200" : "text-blue-100",
+    receivedTimeTextColor: isDark ? "text-gray-500" : "text-gray-500",
+    inputBorder: isDark ? "border-gray-600" : "border-gray-200",
+  };
 
   useEffect(() => {
     // Set navigation title and right header button
@@ -38,12 +61,12 @@ const ChatScreen = ({ route, navigation }) => {
           <Ionicons
             name="information-circle-outline"
             size={24}
-            color="#3498db"
+            color={styles.iconColor}
           />
         </TouchableOpacity>
       ),
     });
-  }, [navigation, conversation]);
+  }, [navigation, conversation, theme]);
 
   const sendMessage = () => {
     if (message.trim() === "") return;
@@ -97,13 +120,15 @@ const ChatScreen = ({ route, navigation }) => {
       <View
         style={tw`my-1 mx-3 max-w-3/4 ${
           item.isSent
-            ? "self-end bg-blue-500 rounded-tl-xl rounded-bl-xl rounded-tr-xl"
-            : "self-start bg-gray-200 rounded-tr-xl rounded-br-xl rounded-tl-xl"
+            ? `self-end ${styles.sentMessageBg} rounded-tl-xl rounded-bl-xl rounded-tr-xl`
+            : `self-start ${styles.receivedMessageBg} rounded-tr-xl rounded-br-xl rounded-tl-xl`
         }`}
       >
         <View style={tw`p-3`}>
           <Text
-            style={tw`text-base ${item.isSent ? "text-white" : "text-black"}`}
+            style={tw`text-base ${
+              item.isSent ? "text-white" : styles.textColor
+            }`}
           >
             {item.text}
           </Text>
@@ -117,7 +142,9 @@ const ChatScreen = ({ route, navigation }) => {
         </View>
         <Text
           style={tw`text-xs ${
-            item.isSent ? "text-blue-100 self-end" : "text-gray-500"
+            item.isSent
+              ? `${styles.timeTextColor} self-end`
+              : styles.receivedTimeTextColor
           } px-3 pb-1`}
         >
           {item.time}
@@ -138,9 +165,15 @@ const ChatScreen = ({ route, navigation }) => {
         style={tw`flex-1 bg-black bg-opacity-50`}
         onPress={() => setShowAttachmentOptions(false)}
       >
-        <View style={tw`absolute bottom-0 w-full bg-white rounded-t-3xl`}>
-          <View style={tw`w-16 h-1 bg-gray-300 rounded-full mx-auto my-3`} />
-          <Text style={tw`text-xl font-bold text-center mb-4`}>
+        <View
+          style={tw`absolute bottom-0 w-full ${styles.modalBackground} rounded-t-3xl`}
+        >
+          <View
+            style={tw`w-16 h-1 ${styles.receivedMessageBg} rounded-full mx-auto my-3`}
+          />
+          <Text
+            style={tw`text-xl font-bold text-center mb-4 ${styles.textColor}`}
+          >
             Add Attachment
           </Text>
 
@@ -152,9 +185,7 @@ const ChatScreen = ({ route, navigation }) => {
             <TouchableOpacity
               style={tw`items-center mx-4`}
               onPress={() => {
-                // Add camera functionality here
                 setShowAttachmentOptions(false);
-                // For demo, simulate adding a photo
                 const photoMessage = {
                   id: String(Date.now()),
                   text: "I found a leak under the sink",
@@ -169,41 +200,59 @@ const ChatScreen = ({ route, navigation }) => {
               }}
             >
               <View
-                style={tw`w-16 h-16 bg-blue-100 rounded-full items-center justify-center mb-2`}
+                style={tw`w-16 h-16 ${
+                  isDark ? "bg-blue-900" : "bg-blue-100"
+                } rounded-full items-center justify-center mb-2`}
               >
-                <Ionicons name="camera" size={30} color="#3498db" />
+                <Ionicons name="camera" size={30} color={styles.iconColor} />
               </View>
-              <Text style={tw`text-sm font-medium`}>Camera</Text>
+              <Text style={tw`text-sm font-medium ${styles.textColor}`}>
+                Camera
+              </Text>
             </TouchableOpacity>
 
             <TouchableOpacity
               style={tw`items-center mx-4`}
               onPress={() => {
-                // Add photo library functionality here
                 setShowAttachmentOptions(false);
               }}
             >
               <View
-                style={tw`w-16 h-16 bg-purple-100 rounded-full items-center justify-center mb-2`}
+                style={tw`w-16 h-16 ${
+                  isDark ? "bg-purple-900" : "bg-purple-100"
+                } rounded-full items-center justify-center mb-2`}
               >
-                <Ionicons name="image" size={30} color="#9c27b0" />
+                <Ionicons
+                  name="image"
+                  size={30}
+                  color={isDark ? "#ce93d8" : "#9c27b0"}
+                />
               </View>
-              <Text style={tw`text-sm font-medium`}>Photos</Text>
+              <Text style={tw`text-sm font-medium ${styles.textColor}`}>
+                Photos
+              </Text>
             </TouchableOpacity>
 
             <TouchableOpacity
               style={tw`items-center mx-4`}
               onPress={() => {
-                // Add document functionality here
                 setShowAttachmentOptions(false);
               }}
             >
               <View
-                style={tw`w-16 h-16 bg-orange-100 rounded-full items-center justify-center mb-2`}
+                style={tw`w-16 h-16 ${
+                  isDark ? "bg-orange-900" : "bg-orange-100"
+                } rounded-full items-center justify-center mb-2`}
               >
-                <Ionicons name="document" size={30} color="#e67e22" />
+                <Ionicons
+                  name="document"
+                  size={30}
+                  color={isDark ? "#ffb74d" : "#e67e22"}
+                />
               </View>
-              <Text style={tw`text-sm font-medium`}>Document</Text>
+              <Text style={tw`text-sm font-medium ${styles.textColor}`}>
+                Document
+              </Text>
             </TouchableOpacity>
 
             <TouchableOpacity
@@ -214,26 +263,41 @@ const ChatScreen = ({ route, navigation }) => {
               }}
             >
               <View
-                style={tw`w-16 h-16 bg-red-100 rounded-full items-center justify-center mb-2`}
+                style={tw`w-16 h-16 ${
+                  isDark ? "bg-red-900" : "bg-red-100"
+                } rounded-full items-center justify-center mb-2`}
               >
-                <Ionicons name="construct" size={30} color="#e53935" />
+                <Ionicons
+                  name="construct"
+                  size={30}
+                  color={isDark ? "#ef9a9a" : "#e53935"}
+                />
               </View>
-              <Text style={tw`text-sm font-medium`}>Maintenance</Text>
+              <Text style={tw`text-sm font-medium ${styles.textColor}`}>
+                Maintenance
+              </Text>
             </TouchableOpacity>
 
             <TouchableOpacity
               style={tw`items-center mx-4`}
               onPress={() => {
-                // Add location functionality here
                 setShowAttachmentOptions(false);
               }}
             >
               <View
-                style={tw`w-16 h-16 bg-green-100 rounded-full items-center justify-center mb-2`}
+                style={tw`w-16 h-16 ${
+                  isDark ? "bg-green-900" : "bg-green-100"
+                } rounded-full items-center justify-center mb-2`}
               >
-                <Ionicons name="location" size={30} color="#2ecc71" />
+                <Ionicons
+                  name="location"
+                  size={30}
+                  color={isDark ? "#a5d6a7" : "#2ecc71"}
+                />
               </View>
-              <Text style={tw`text-sm font-medium`}>Location</Text>
+              <Text style={tw`text-sm font-medium ${styles.textColor}`}>
+                Location
+              </Text>
             </TouchableOpacity>
           </ScrollView>
         </View>
@@ -253,17 +317,25 @@ const ChatScreen = ({ route, navigation }) => {
         style={tw`flex-1 bg-black bg-opacity-50`}
         onPress={() => setShowInfoPanel(false)}
       >
-        <View style={tw`absolute bottom-0 w-full bg-white rounded-t-3xl`}>
-          <View style={tw`w-16 h-1 bg-gray-300 rounded-full mx-auto my-3`} />
-          <Text style={tw`text-xl font-bold text-center mb-4`}>
+        <View
+          style={tw`absolute bottom-0 w-full ${styles.modalBackground} rounded-t-3xl`}
+        >
+          <View
+            style={tw`w-16 h-1 ${styles.receivedMessageBg} rounded-full mx-auto my-3`}
+          />
+          <Text
+            style={tw`text-xl font-bold text-center mb-4 ${styles.textColor}`}
+          >
             Conversation Info
           </Text>
 
           <View style={tw`px-6 pb-8`}>
-            <Card style="mb-4">
+            <Card style={`mb-4 ${styles.cardBackground}`}>
               <View style={tw`p-4 items-center`}>
                 <View
-                  style={tw`w-20 h-20 bg-blue-100 rounded-full items-center justify-center mb-3`}
+                  style={tw`w-20 h-20 ${
+                    isDark ? "bg-blue-900" : "bg-blue-100"
+                  } rounded-full items-center justify-center mb-3`}
                 >
                   <Ionicons
                     name={
@@ -272,11 +344,13 @@ const ChatScreen = ({ route, navigation }) => {
                         : "person"
                     }
                     size={40}
-                    color="#3498db"
+                    color={styles.iconColor}
                   />
                 </View>
-                <Text style={tw`text-xl font-bold`}>{conversation.sender}</Text>
-                <Text style={tw`text-gray-500`}>
+                <Text style={tw`text-xl font-bold ${styles.textColor}`}>
+                  {conversation.sender}
+                </Text>
+                <Text style={tw`${styles.subtextColor}`}>
                   {conversation.sender === "Maintenance"
                     ? "Maintenance Department"
                     : conversation.sender === "Building Manager"
@@ -286,40 +360,48 @@ const ChatScreen = ({ route, navigation }) => {
               </View>
             </Card>
 
-            <Text style={tw`text-lg font-semibold mb-2`}>Actions</Text>
+            <Text style={tw`text-lg font-semibold mb-2 ${styles.textColor}`}>
+              Actions
+            </Text>
             <View style={tw`flex-row justify-between mb-4`}>
               <TouchableOpacity
                 style={tw`items-center`}
                 onPress={() => {
-                  // Mute notifications
                   setShowInfoPanel(false);
                 }}
               >
                 <View
-                  style={tw`w-12 h-12 bg-gray-100 rounded-full items-center justify-center mb-1`}
+                  style={tw`w-12 h-12 ${styles.receivedMessageBg} rounded-full items-center justify-center mb-1`}
                 >
                   <Ionicons
                     name="notifications-off-outline"
                     size={24}
-                    color="#555"
+                    color={styles.subtextColor}
                   />
                 </View>
-                <Text style={tw`text-xs text-center`}>Mute</Text>
+                <Text style={tw`text-xs text-center ${styles.textColor}`}>
+                  Mute
+                </Text>
               </TouchableOpacity>
 
               <TouchableOpacity
                 style={tw`items-center`}
                 onPress={() => {
-                  // Search conversation
                   setShowInfoPanel(false);
                 }}
               >
                 <View
-                  style={tw`w-12 h-12 bg-gray-100 rounded-full items-center justify-center mb-1`}
+                  style={tw`w-12 h-12 ${styles.receivedMessageBg} rounded-full items-center justify-center mb-1`}
                 >
-                  <Ionicons name="search-outline" size={24} color="#555" />
+                  <Ionicons
+                    name="search-outline"
+                    size={24}
+                    color={styles.subtextColor}
+                  />
                 </View>
-                <Text style={tw`text-xs text-center`}>Search</Text>
+                <Text style={tw`text-xs text-center ${styles.textColor}`}>
+                  Search
+                </Text>
               </TouchableOpacity>
 
               <TouchableOpacity
@@ -330,56 +412,70 @@ const ChatScreen = ({ route, navigation }) => {
                 }}
               >
                 <View
-                  style={tw`w-12 h-12 bg-gray-100 rounded-full items-center justify-center mb-1`}
+                  style={tw`w-12 h-12 ${styles.receivedMessageBg} rounded-full items-center justify-center mb-1`}
                 >
-                  <Ionicons name="construct-outline" size={24} color="#555" />
+                  <Ionicons
+                    name="construct-outline"
+                    size={24}
+                    color={styles.subtextColor}
+                  />
                 </View>
-                <Text style={tw`text-xs text-center`}>Request</Text>
+                <Text style={tw`text-xs text-center ${styles.textColor}`}>
+                  Request
+                </Text>
               </TouchableOpacity>
 
               {conversation.sender !== "Maintenance" && (
                 <TouchableOpacity
                   style={tw`items-center`}
                   onPress={() => {
-                    // Block user
                     setShowInfoPanel(false);
                   }}
                 >
                   <View
-                    style={tw`w-12 h-12 bg-gray-100 rounded-full items-center justify-center mb-1`}
+                    style={tw`w-12 h-12 ${styles.receivedMessageBg} rounded-full items-center justify-center mb-1`}
                   >
                     <Ionicons
                       name="person-remove-outline"
                       size={24}
-                      color="#555"
+                      color={styles.subtextColor}
                     />
                   </View>
-                  <Text style={tw`text-xs text-center`}>Block</Text>
+                  <Text style={tw`text-xs text-center ${styles.textColor}`}>
+                    Block
+                  </Text>
                 </TouchableOpacity>
               )}
 
               <TouchableOpacity
                 style={tw`items-center`}
                 onPress={() => {
-                  // Report issue
                   setShowInfoPanel(false);
                 }}
               >
                 <View
-                  style={tw`w-12 h-12 bg-gray-100 rounded-full items-center justify-center mb-1`}
+                  style={tw`w-12 h-12 ${styles.receivedMessageBg} rounded-full items-center justify-center mb-1`}
                 >
-                  <Ionicons name="flag-outline" size={24} color="#555" />
+                  <Ionicons
+                    name="flag-outline"
+                    size={24}
+                    color={styles.subtextColor}
+                  />
                 </View>
-                <Text style={tw`text-xs text-center`}>Report</Text>
+                <Text style={tw`text-xs text-center ${styles.textColor}`}>
+                  Report
+                </Text>
               </TouchableOpacity>
             </View>
 
             {conversation.sender === "Maintenance" && (
               <View style={tw`mb-4`}>
-                <Text style={tw`text-lg font-semibold mb-2`}>
+                <Text
+                  style={tw`text-lg font-semibold mb-2 ${styles.textColor}`}
+                >
                   Active Requests
                 </Text>
-                <Card>
+                <Card style={styles.cardBackground}>
                   <TouchableOpacity
                     style={tw`p-4 flex-row items-center`}
                     onPress={() => {
@@ -396,22 +492,34 @@ const ChatScreen = ({ route, navigation }) => {
                     }}
                   >
                     <View
-                      style={tw`w-10 h-10 bg-orange-100 rounded-full items-center justify-center mr-3`}
+                      style={tw`w-10 h-10 ${
+                        isDark ? "bg-orange-900" : "bg-orange-100"
+                      } rounded-full items-center justify-center mr-3`}
                     >
-                      <Ionicons name="construct" size={20} color="#e67e22" />
+                      <Ionicons
+                        name="construct"
+                        size={20}
+                        color={isDark ? "#ffb74d" : "#e67e22"}
+                      />
                     </View>
                     <View style={tw`flex-1`}>
-                      <Text style={tw`font-semibold`}>Leaking Faucet</Text>
+                      <Text style={tw`font-semibold ${styles.textColor}`}>
+                        Leaking Faucet
+                      </Text>
                       <View style={tw`flex-row items-center mt-1`}>
                         <View
                           style={tw`w-2 h-2 rounded-full bg-yellow-500 mr-2`}
                         />
-                        <Text style={tw`text-gray-600 text-sm`}>
+                        <Text style={tw`${styles.subtextColor} text-sm`}>
                           In Progress
                         </Text>
                       </View>
                     </View>
-                    <Ionicons name="chevron-forward" size={20} color="#999" />
+                    <Ionicons
+                      name="chevron-forward"
+                      size={20}
+                      color={styles.subtextColor}
+                    />
                   </TouchableOpacity>
                 </Card>
               </View>
@@ -420,7 +528,6 @@ const ChatScreen = ({ route, navigation }) => {
             <TouchableOpacity
               style={tw`bg-red-500 py-3 rounded-full items-center`}
               onPress={() => {
-                // Clear conversation
                 setChatMessages([]);
                 setShowInfoPanel(false);
               }}
@@ -436,8 +543,11 @@ const ChatScreen = ({ route, navigation }) => {
   );
 
   return (
-    <SafeAreaView style={tw`flex-1 bg-white`}>
-      <StatusBar barStyle="dark-content" />
+    <SafeAreaView style={tw`flex-1 ${styles.background}`}>
+      <StatusBar
+        barStyle={styles.statusBarStyle}
+        backgroundColor={styles.statusBarColor}
+      />
 
       <KeyboardAvoidingView
         behavior={Platform.OS === "ios" ? "padding" : "height"}
@@ -450,18 +560,25 @@ const ChatScreen = ({ route, navigation }) => {
           data={chatMessages}
           renderItem={renderMessage}
           keyExtractor={(item) => item.id}
-          inverted={true} // Display most recent messages at the bottom
           contentContainerStyle={tw`flex-grow justify-end pt-4`}
           style={tw`flex-1`}
           ListEmptyComponent={() => (
             <View style={tw`flex-1 items-center justify-center py-12`}>
               <View
-                style={tw`w-16 h-16 bg-blue-100 rounded-full items-center justify-center mb-4`}
+                style={tw`w-16 h-16 ${
+                  isDark ? "bg-blue-900" : "bg-blue-100"
+                } rounded-full items-center justify-center mb-4`}
               >
-                <Ionicons name="chatbubble-outline" size={32} color="#3498db" />
+                <Ionicons
+                  name="chatbubble-outline"
+                  size={32}
+                  color={styles.iconColor}
+                />
               </View>
-              <Text style={tw`text-gray-500 text-center`}>No messages yet</Text>
-              <Text style={tw`text-gray-400 text-center mt-1`}>
+              <Text style={tw`${styles.subtextColor} text-center`}>
+                No messages yet
+              </Text>
+              <Text style={tw`${styles.subtextColor} text-center mt-1`}>
                 Start the conversation!
               </Text>
             </View>
@@ -470,23 +587,24 @@ const ChatScreen = ({ route, navigation }) => {
 
         {/* Message input section */}
         <View
-          style={tw`border-t border-gray-200 px-2 py-2 flex-row items-center`}
+          style={tw`border-t ${styles.borderColor} px-2 py-2 flex-row items-center`}
         >
           <TouchableOpacity
             onPress={() => setShowAttachmentOptions(true)}
             style={tw`p-2 mr-1`}
           >
-            <Ionicons name="add-circle" size={24} color="#3498db" />
+            <Ionicons name="add-circle" size={24} color={styles.iconColor} />
           </TouchableOpacity>
 
           <View
-            style={tw`flex-1 flex-row items-center bg-gray-100 rounded-full px-3 py-2 mr-2`}
+            style={tw`flex-1 flex-row items-center ${styles.inputBackground} rounded-full px-3 h-full mr-2`}
           >
             <TextInput
-              style={tw`flex-1 text-base`}
+              style={tw`flex-1 text-base ${styles.inputText}`}
               value={message}
               onChangeText={setMessage}
               placeholder="Type a message..."
+              placeholderTextColor={isDark ? "#9ca3af" : "#6b7280"}
               multiline
               maxHeight={100}
             />

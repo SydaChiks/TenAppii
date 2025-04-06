@@ -755,13 +755,8 @@ const NewsScreen = ({ navigation }) => {
 
   return (
     <SafeAreaView style={tw`flex-1 ${styles.background}`}>
-      {/* Header */}
-      <Animated.View
-        style={[
-          tw`${styles.headerBackground} p-4 pb-6 rounded-b-3xl`,
-          { height: headerHeight },
-        ]}
-      >
+      {/* Fixed Header */}
+      <View style={tw`${styles.headerBackground} p-4 pb-6 rounded-b-3xl`}>
         <View style={tw`flex-row justify-between items-center mb-4`}>
           <TouchableOpacity
             onPress={() => navigation.goBack()}
@@ -800,31 +795,16 @@ const NewsScreen = ({ navigation }) => {
             </TouchableOpacity>
           )}
         </View>
-      </Animated.View>
+      </View>
 
-      <Animated.ScrollView
-        style={tw`flex-1`}
-        contentContainerStyle={tw`p-4`}
-        showsVerticalScrollIndicator={false}
-        refreshControl={
-          <RefreshControl
-            refreshing={refreshing}
-            onRefresh={onRefresh}
-            colors={["#3498db"]}
-          />
-        }
-        onScroll={Animated.event(
-          [{ nativeEvent: { contentOffset: { y: scrollY } } }],
-          { useNativeDriver: false }
-        )}
-        scrollEventThrottle={16}
-      >
+      {/* Fixed Filter Pills and Post Counter */}
+      <View style={tw`${styles.background} pt-2`}>
         {/* Category Pills */}
         <ScrollView
           horizontal
           showsHorizontalScrollIndicator={false}
-          style={tw`mb-4`}
-          contentContainerStyle={tw`pb-2`}
+          style={tw`mb-2`}
+          contentContainerStyle={tw`px-4 pb-2`}
         >
           <TouchableOpacity
             style={tw`mr-2 px-4 py-2 rounded-full ${
@@ -901,7 +881,7 @@ const NewsScreen = ({ navigation }) => {
         </ScrollView>
 
         {/* Post counter */}
-        <View style={tw`mb-2 flex-row justify-between items-center`}>
+        <View style={tw`px-4 mb-2 flex-row justify-between items-center`}>
           <Text style={tw`${styles.secondaryText} text-sm`}>
             {filteredPosts().length}{" "}
             {filteredPosts().length === 1 ? "post" : "posts"} found
@@ -910,7 +890,21 @@ const NewsScreen = ({ navigation }) => {
             <Text style={tw`text-blue-500 text-sm`}>Refresh</Text>
           </TouchableOpacity>
         </View>
+      </View>
 
+      {/* Scrollable Content */}
+      <ScrollView
+        style={tw`flex-1`}
+        contentContainerStyle={tw`px-4 pb-20`}
+        showsVerticalScrollIndicator={false}
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={onRefresh}
+            colors={["#3498db"]}
+          />
+        }
+      >
         {filteredPosts().length > 0 ? (
           filteredPosts().map(renderPost)
         ) : (
@@ -934,10 +928,7 @@ const NewsScreen = ({ navigation }) => {
             </TouchableOpacity>
           </View>
         )}
-
-        {/* Bottom space for better scrolling experience */}
-        <View style={tw`h-20`} />
-      </Animated.ScrollView>
+      </ScrollView>
 
       {/* Filter modal */}
       {renderFilterModal()}

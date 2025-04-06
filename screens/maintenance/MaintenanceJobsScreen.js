@@ -14,11 +14,38 @@ import {
 } from "react-native";
 import tw from "twrnc";
 import Card from "../../components/Card";
+import { useTheme } from "../../context/ThemeContext";
 
 const MaintenanceJobsScreen = ({ navigation }) => {
   const [activeTab, setActiveTab] = useState("pending");
   const [selectedRequest, setSelectedRequest] = useState(null);
   const [showRequestModal, setShowRequestModal] = useState(false);
+  const { theme } = useTheme();
+
+  const isDark = theme === "dark";
+  // Theme specific styles
+  const styles = {
+    background: isDark ? "bg-gray-900" : "bg-gray-100",
+    statusBarStyle: isDark ? "light-content" : "dark-content",
+    statusBarColor: isDark ? "#121212" : "#f9f9f9",
+    headerBackground: isDark ? "bg-blue-800" : "bg-blue-500",
+    headerTextColor: isDark ? "text-blue-200" : "text-blue-100",
+    cardBackground: isDark ? "bg-gray-800" : "bg-white",
+    textColor: isDark ? "text-white" : "text-black",
+    subtextColor: isDark ? "text-gray-400" : "text-gray-500",
+    borderColor: isDark ? "border-gray-700" : "border-gray-200",
+    modalBackground: isDark ? "bg-gray-800" : "bg-white",
+    iconButtonBg: isDark ? "bg-blue-700" : "bg-blue-400",
+    pendingStatus: isDark ? "bg-yellow-600" : "bg-yellow-500",
+    inProgressStatus: isDark ? "bg-blue-600" : "bg-blue-500",
+    completedStatus: isDark ? "bg-green-600" : "bg-green-500",
+    activeTabBorder: isDark ? "border-blue-400" : "border-blue-500",
+    activeTabText: isDark ? "text-blue-400" : "text-blue-500",
+    inactiveTabText: isDark ? "text-gray-400" : "text-gray-500",
+    emptyIconColor: isDark ? "#4b5563" : "#ddd",
+    grayButton: isDark ? "bg-gray-700" : "bg-gray-200",
+    grayButtonText: isDark ? "text-gray-200" : "text-gray-700",
+  };
 
   // Mock data for maintenance requests
   const maintenanceRequests = [
@@ -32,11 +59,11 @@ const MaintenanceJobsScreen = ({ navigation }) => {
       unit: "Apt 304",
       tenant: "Sarah Johnson",
       images: [
-        "https://example.com/leak1.jpg",
-        "https://example.com/leak2.jpg",
+        "https://dummyjson.com/image/150",
+        "https://dummyjson.com/image/150",
       ],
       category: "Plumbing",
-      statusColor: "bg-yellow-500",
+      statusColor: styles.pendingStatus,
     },
     {
       id: "2",
@@ -47,9 +74,9 @@ const MaintenanceJobsScreen = ({ navigation }) => {
       date: "2 hours ago",
       unit: "Apt 205",
       tenant: "Michael Chen",
-      images: ["https://example.com/ac1.jpg"],
+      images: ["https://dummyjson.com/image/150"],
       category: "HVAC",
-      statusColor: "bg-blue-500",
+      statusColor: styles.inProgressStatus,
     },
     {
       id: "3",
@@ -60,9 +87,9 @@ const MaintenanceJobsScreen = ({ navigation }) => {
       date: "Yesterday",
       unit: "Apt 412",
       tenant: "David Wilson",
-      images: ["https://example.com/drain1.jpg"],
+      images: ["https://dummyjson.com/image/150"],
       category: "Plumbing",
-      statusColor: "bg-green-500",
+      statusColor: styles.completedStatus,
     },
     {
       id: "4",
@@ -73,9 +100,9 @@ const MaintenanceJobsScreen = ({ navigation }) => {
       date: "5 hours ago",
       unit: "Apt 108",
       tenant: "Emily Rodriguez",
-      images: ["https://example.com/switch1.jpg"],
+      images: ["https://dummyjson.com/image/150"],
       category: "Electrical",
-      statusColor: "bg-yellow-500",
+      statusColor: styles.pendingStatus,
     },
   ];
 
@@ -90,13 +117,15 @@ const MaintenanceJobsScreen = ({ navigation }) => {
     <View style={tw`flex-row mb-4`}>
       <TouchableOpacity
         style={tw`flex-1 py-3 ${
-          activeTab === "pending" ? "border-b-2 border-blue-500" : ""
+          activeTab === "pending" ? `border-b-2 ${styles.activeTabBorder}` : ""
         }`}
         onPress={() => setActiveTab("pending")}
       >
         <Text
           style={tw`text-center font-semibold ${
-            activeTab === "pending" ? "text-blue-500" : "text-gray-500"
+            activeTab === "pending"
+              ? styles.activeTabText
+              : styles.inactiveTabText
           }`}
         >
           Pending
@@ -104,13 +133,17 @@ const MaintenanceJobsScreen = ({ navigation }) => {
       </TouchableOpacity>
       <TouchableOpacity
         style={tw`flex-1 py-3 ${
-          activeTab === "in-progress" ? "border-b-2 border-blue-500" : ""
+          activeTab === "in-progress"
+            ? `border-b-2 ${styles.activeTabBorder}`
+            : ""
         }`}
         onPress={() => setActiveTab("in-progress")}
       >
         <Text
           style={tw`text-center font-semibold ${
-            activeTab === "in-progress" ? "text-blue-500" : "text-gray-500"
+            activeTab === "in-progress"
+              ? styles.activeTabText
+              : styles.inactiveTabText
           }`}
         >
           In Progress
@@ -118,13 +151,17 @@ const MaintenanceJobsScreen = ({ navigation }) => {
       </TouchableOpacity>
       <TouchableOpacity
         style={tw`flex-1 py-3 ${
-          activeTab === "completed" ? "border-b-2 border-blue-500" : ""
+          activeTab === "completed"
+            ? `border-b-2 ${styles.activeTabBorder}`
+            : ""
         }`}
         onPress={() => setActiveTab("completed")}
       >
         <Text
           style={tw`text-center font-semibold ${
-            activeTab === "completed" ? "text-blue-500" : "text-gray-500"
+            activeTab === "completed"
+              ? styles.activeTabText
+              : styles.inactiveTabText
           }`}
         >
           Completed
@@ -144,32 +181,40 @@ const MaintenanceJobsScreen = ({ navigation }) => {
         style={tw`flex-1 bg-black bg-opacity-50 justify-end`}
         onPress={() => setShowRequestModal(false)}
       >
-        <View style={tw`bg-white rounded-t-3xl p-5 max-h-3/4`}>
-          <View style={tw`w-16 h-1 bg-gray-300 rounded-full mx-auto mb-5`} />
+        <View style={tw`${styles.modalBackground} rounded-t-3xl p-5 max-h-3/4`}>
+          <View
+            style={tw`w-16 h-1 ${styles.borderColor} rounded-full mx-auto mb-5`}
+          />
           <ScrollView>
             <View style={tw`pb-6`}>
               <View style={tw`flex-row justify-between items-center mb-4`}>
-                <Text style={tw`text-xl font-bold`}>
+                <Text style={tw`text-xl font-bold ${styles.textColor}`}>
                   {selectedRequest?.title}
                 </Text>
                 <View style={tw`flex-row items-center`}>
                   <View
                     style={tw`w-3 h-3 rounded-full ${selectedRequest?.statusColor} mr-2`}
                   />
-                  <Text style={tw`font-medium`}>{selectedRequest?.status}</Text>
+                  <Text style={tw`font-medium ${styles.textColor}`}>
+                    {selectedRequest?.status}
+                  </Text>
                 </View>
               </View>
 
               <View style={tw`flex-row mb-3`}>
                 <View style={tw`w-1/2`}>
-                  <Text style={tw`text-gray-500 text-sm`}>Category</Text>
-                  <Text style={tw`font-medium`}>
+                  <Text style={tw`text-sm ${styles.subtextColor}`}>
+                    Category
+                  </Text>
+                  <Text style={tw`font-medium ${styles.textColor}`}>
                     {selectedRequest?.category}
                   </Text>
                 </View>
                 <View style={tw`w-1/2`}>
-                  <Text style={tw`text-gray-500 text-sm`}>Priority</Text>
-                  <Text style={tw`font-medium`}>
+                  <Text style={tw`text-sm ${styles.subtextColor}`}>
+                    Priority
+                  </Text>
+                  <Text style={tw`font-medium ${styles.textColor}`}>
                     {selectedRequest?.priority}
                   </Text>
                 </View>
@@ -177,25 +222,33 @@ const MaintenanceJobsScreen = ({ navigation }) => {
 
               <View style={tw`flex-row mb-3`}>
                 <View style={tw`w-1/2`}>
-                  <Text style={tw`text-gray-500 text-sm`}>Unit</Text>
-                  <Text style={tw`font-medium`}>{selectedRequest?.unit}</Text>
+                  <Text style={tw`text-sm ${styles.subtextColor}`}>Unit</Text>
+                  <Text style={tw`font-medium ${styles.textColor}`}>
+                    {selectedRequest?.unit}
+                  </Text>
                 </View>
                 <View style={tw`w-1/2`}>
-                  <Text style={tw`text-gray-500 text-sm`}>Tenant</Text>
-                  <Text style={tw`font-medium`}>{selectedRequest?.tenant}</Text>
+                  <Text style={tw`text-sm ${styles.subtextColor}`}>Tenant</Text>
+                  <Text style={tw`font-medium ${styles.textColor}`}>
+                    {selectedRequest?.tenant}
+                  </Text>
                 </View>
               </View>
 
               <View style={tw`mb-4`}>
-                <Text style={tw`text-gray-500 text-sm mb-1`}>Description</Text>
-                <Text style={tw`text-base`}>
+                <Text style={tw`text-sm ${styles.subtextColor} mb-1`}>
+                  Description
+                </Text>
+                <Text style={tw`text-base ${styles.textColor}`}>
                   {selectedRequest?.description}
                 </Text>
               </View>
 
               {selectedRequest?.images && selectedRequest.images.length > 0 && (
                 <View style={tw`mb-4`}>
-                  <Text style={tw`text-gray-500 text-sm mb-2`}>Images</Text>
+                  <Text style={tw`text-sm ${styles.subtextColor} mb-2`}>
+                    Images
+                  </Text>
                   <ScrollView horizontal showsHorizontalScrollIndicator={false}>
                     {selectedRequest.images.map((image, index) => (
                       <Image
@@ -215,7 +268,6 @@ const MaintenanceJobsScreen = ({ navigation }) => {
                     <TouchableOpacity
                       style={tw`bg-blue-500 py-3 px-6 rounded-full flex-1 mr-2 items-center`}
                       onPress={() => {
-                        // Update status to In Progress
                         setShowRequestModal(false);
                       }}
                     >
@@ -224,10 +276,10 @@ const MaintenanceJobsScreen = ({ navigation }) => {
                       </Text>
                     </TouchableOpacity>
                     <TouchableOpacity
-                      style={tw`bg-gray-200 py-3 px-6 rounded-full flex-1 ml-2 items-center`}
+                      style={tw`${styles.grayButton} py-3 px-6 rounded-full flex-1 ml-2 items-center`}
                       onPress={() => setShowRequestModal(false)}
                     >
-                      <Text style={tw`text-gray-700 font-semibold`}>
+                      <Text style={tw`${styles.grayButtonText} font-semibold`}>
                         Cancel
                       </Text>
                     </TouchableOpacity>
@@ -239,7 +291,6 @@ const MaintenanceJobsScreen = ({ navigation }) => {
                     <TouchableOpacity
                       style={tw`bg-green-500 py-3 px-6 rounded-full flex-1 mr-2 items-center`}
                       onPress={() => {
-                        // Update status to Completed
                         setShowRequestModal(false);
                       }}
                     >
@@ -248,7 +299,7 @@ const MaintenanceJobsScreen = ({ navigation }) => {
                       </Text>
                     </TouchableOpacity>
                     <TouchableOpacity
-                      style={tw`bg-gray-200 py-3 px-6 rounded-full flex-1 ml-2 items-center`}
+                      style={tw`${styles.grayButton} py-3 px-6 rounded-full flex-1 ml-2 items-center`}
                       onPress={() => {
                         navigation.navigate("Chat", {
                           conversation: {
@@ -270,7 +321,7 @@ const MaintenanceJobsScreen = ({ navigation }) => {
                         setShowRequestModal(false);
                       }}
                     >
-                      <Text style={tw`text-gray-700 font-semibold`}>
+                      <Text style={tw`${styles.grayButtonText} font-semibold`}>
                         Message Tenant
                       </Text>
                     </TouchableOpacity>
@@ -313,25 +364,32 @@ const MaintenanceJobsScreen = ({ navigation }) => {
   );
 
   return (
-    <SafeAreaView style={tw`flex-1 bg-gray-100`}>
-      <StatusBar barStyle="dark-content" backgroundColor="#f9f9f9" />
+    <SafeAreaView style={tw`flex-1 ${styles.background}`}>
+      <StatusBar
+        barStyle={styles.statusBarStyle}
+        backgroundColor={styles.statusBarColor}
+      />
 
       {/* Header with blue background */}
-      <View style={tw`bg-blue-500 p-6 pt-8 pb-16 rounded-b-3xl`}>
+      <View style={tw`${styles.headerBackground} p-6 pt-8 pb-16 rounded-b-3xl`}>
         <View style={tw`flex-row justify-between items-center`}>
           <View style={tw`max-w-2/3`}>
             <Text style={tw`text-3xl font-bold text-white`}>
               Maintenance Jobs
             </Text>
-            <Text style={tw`text-blue-100 mt-1`}>
+            <Text style={tw`${styles.headerTextColor} mt-1`}>
               View and manage tenant maintenance requests
             </Text>
           </View>
           <View style={tw`flex-row`}>
-            <TouchableOpacity style={tw`p-2 mr-2 bg-blue-400 rounded-full`}>
+            <TouchableOpacity
+              style={tw`p-2 mr-2 ${styles.iconButtonBg} rounded-full`}
+            >
               <Ionicons name="search" size={22} color="#fff" />
             </TouchableOpacity>
-            <TouchableOpacity style={tw`p-2 bg-blue-400 rounded-full`}>
+            <TouchableOpacity
+              style={tw`p-2 ${styles.iconButtonBg} rounded-full`}
+            >
               <Ionicons name="filter" size={22} color="#fff" />
             </TouchableOpacity>
           </View>
@@ -342,7 +400,7 @@ const MaintenanceJobsScreen = ({ navigation }) => {
       <View style={tw`flex-1`}>
         {/* Card with Fixed Tabs */}
         <View style={tw`px-4 -mt-10`}>
-          <Card style="mb-4">{renderTabs()}</Card>
+          <Card style={`mb-4 ${styles.cardBackground}`}>{renderTabs()}</Card>
         </View>
 
         {/* Scrollable Content */}
@@ -351,14 +409,14 @@ const MaintenanceJobsScreen = ({ navigation }) => {
           contentContainerStyle={tw`pb-4 px-4`}
           showsVerticalScrollIndicator={false}
         >
-          <Card style="mb-4">
+          <Card style={`mb-4 ${styles.cardBackground}`}>
             {filteredRequests.length > 0 ? (
               <FlatList
                 data={filteredRequests}
                 keyExtractor={(item) => item.id}
                 renderItem={({ item }) => (
                   <TouchableOpacity
-                    style={tw`p-4 border-b border-gray-100`}
+                    style={tw`p-4 border-b ${styles.borderColor}`}
                     onPress={() => {
                       setSelectedRequest(item);
                       setShowRequestModal(true);
@@ -367,19 +425,24 @@ const MaintenanceJobsScreen = ({ navigation }) => {
                     <View
                       style={tw`flex-row justify-between items-center mb-2`}
                     >
-                      <Text style={tw`font-semibold text-lg`}>
+                      <Text
+                        style={tw`font-semibold text-lg ${styles.textColor}`}
+                      >
                         {item.title}
                       </Text>
                       <View style={tw`flex-row items-center`}>
                         <View
                           style={tw`w-2 h-2 rounded-full ${item.statusColor} mr-2`}
                         />
-                        <Text style={tw`text-gray-500 text-xs`}>
+                        <Text style={tw`text-xs ${styles.subtextColor}`}>
                           {item.status}
                         </Text>
                       </View>
                     </View>
-                    <Text style={tw`text-gray-600 mb-2`} numberOfLines={2}>
+                    <Text
+                      style={tw`${styles.subtextColor} mb-2`}
+                      numberOfLines={2}
+                    >
                       {item.description}
                     </Text>
                     <View style={tw`flex-row justify-between items-center`}>
@@ -387,14 +450,16 @@ const MaintenanceJobsScreen = ({ navigation }) => {
                         <Ionicons
                           name="location-outline"
                           size={16}
-                          color="#777"
+                          color={styles.subtextColor}
                           style={tw`mr-1`}
                         />
-                        <Text style={tw`text-gray-500 text-xs`}>
+                        <Text style={tw`text-xs ${styles.subtextColor}`}>
                           {item.unit}
                         </Text>
                       </View>
-                      <Text style={tw`text-gray-500 text-xs`}>{item.date}</Text>
+                      <Text style={tw`text-xs ${styles.subtextColor}`}>
+                        {item.date}
+                      </Text>
                     </View>
                     {item.images && item.images.length > 0 && (
                       <View style={tw`mt-2`}>
@@ -414,10 +479,10 @@ const MaintenanceJobsScreen = ({ navigation }) => {
                 <Ionicons
                   name="checkmark-done-circle-outline"
                   size={48}
-                  color="#ddd"
+                  color={styles.emptyIconColor}
                   style={tw`mb-4`}
                 />
-                <Text style={tw`text-gray-500 text-center`}>
+                <Text style={tw`${styles.subtextColor} text-center`}>
                   No {activeTab} maintenance requests
                 </Text>
               </View>

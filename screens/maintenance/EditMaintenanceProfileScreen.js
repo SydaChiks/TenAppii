@@ -13,23 +13,27 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 import tw from "twrnc";
 import * as Yup from "yup";
-import { Button, Input } from "../components";
-import { useTheme } from "../context/ThemeContext";
+import { Button, Input } from "../../components";
+import { useTheme } from "../../context/ThemeContext";
 
 const validationSchema = Yup.object().shape({
   fullName: Yup.string().required("Full name is required"),
   email: Yup.string().email("Invalid email").required("Email is required"),
   phone: Yup.string().required("Phone number is required"),
-  unitNumber: Yup.string().required("Unit number is required"),
+  specialization: Yup.string().required("Specialization is required"),
+  yearsOfExperience: Yup.number()
+    .required("Years of experience is required")
+    .min(0, "Must be 0 or more"),
 });
 
-const EditProfileScreen = ({ navigation, route }) => {
+const EditMaintenanceProfileScreen = ({ navigation, route }) => {
   const { userData } = route.params;
   const [profileImage, setProfileImage] = useState(userData.profileImage);
   const [loading, setLoading] = useState(false);
   const { theme } = useTheme();
 
   const isDark = theme === "dark";
+
   // Theme specific styles
   const styles = {
     background: isDark ? "bg-gray-900" : "bg-gray-100",
@@ -141,7 +145,8 @@ const EditProfileScreen = ({ navigation, route }) => {
             fullName: userData.fullName,
             email: userData.email,
             phone: userData.phone || "",
-            unitNumber: userData.unitNumber,
+            specialization: userData.specialization || "",
+            yearsOfExperience: userData.yearsOfExperience?.toString() || "0",
           }}
           validationSchema={validationSchema}
           onSubmit={handleUpdateProfile}
@@ -192,13 +197,25 @@ const EditProfileScreen = ({ navigation, route }) => {
               />
 
               <Input
-                label="Unit Number"
-                placeholder="Enter your unit number"
-                icon="home-outline"
-                value={values.unitNumber}
-                onChangeText={handleChange("unitNumber")}
-                onBlur={handleBlur("unitNumber")}
-                error={touched.unitNumber && errors.unitNumber}
+                label="Specialization"
+                placeholder="e.g., HVAC, Electrical, Plumbing"
+                icon="build-outline"
+                value={values.specialization}
+                onChangeText={handleChange("specialization")}
+                onBlur={handleBlur("specialization")}
+                error={touched.specialization && errors.specialization}
+                darkMode={isDark}
+              />
+
+              <Input
+                label="Years of Experience"
+                placeholder="Enter years of experience"
+                icon="briefcase-outline"
+                value={values.yearsOfExperience}
+                onChangeText={handleChange("yearsOfExperience")}
+                onBlur={handleBlur("yearsOfExperience")}
+                error={touched.yearsOfExperience && errors.yearsOfExperience}
+                keyboardType="numeric"
                 darkMode={isDark}
               />
 
@@ -235,9 +252,55 @@ const EditProfileScreen = ({ navigation, route }) => {
             color={styles.chevronColor}
           />
         </TouchableOpacity>
+
+        {/* Certifications Management */}
+        <TouchableOpacity
+          style={tw`flex-row items-center w-full ${styles.changePasswordBg} rounded-xl p-4 mt-4 shadow-sm`}
+          onPress={() => navigation.navigate("ManageCertifications")}
+        >
+          <View style={tw`p-2 mr-3 bg-purple-100 rounded-full`}>
+            <Ionicons
+              name="ribbon-outline"
+              size={22}
+              color={isDark ? "#ba68c8" : "#9c27b0"}
+            />
+          </View>
+          <Text style={tw`text-base ${styles.textColor}`}>
+            Manage Certifications
+          </Text>
+          <View style={tw`flex-1`}></View>
+          <Ionicons
+            name="chevron-forward"
+            size={20}
+            color={styles.chevronColor}
+          />
+        </TouchableOpacity>
+
+        {/* Service Areas Management */}
+        <TouchableOpacity
+          style={tw`flex-row items-center w-full ${styles.changePasswordBg} rounded-xl p-4 mt-4 shadow-sm`}
+          onPress={() => navigation.navigate("ManageServiceAreas")}
+        >
+          <View style={tw`p-2 mr-3 bg-blue-100 rounded-full`}>
+            <Ionicons
+              name="location-outline"
+              size={22}
+              color={isDark ? "#64b5f6" : "#2196f3"}
+            />
+          </View>
+          <Text style={tw`text-base ${styles.textColor}`}>
+            Manage Service Areas
+          </Text>
+          <View style={tw`flex-1`}></View>
+          <Ionicons
+            name="chevron-forward"
+            size={20}
+            color={styles.chevronColor}
+          />
+        </TouchableOpacity>
       </ScrollView>
     </SafeAreaView>
   );
 };
 
-export default EditProfileScreen;
+export default EditMaintenanceProfileScreen;

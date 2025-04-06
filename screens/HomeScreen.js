@@ -86,64 +86,64 @@ const HomeScreen = ({ navigation }) => {
         barStyle={styles.statusBarStyle}
         backgroundColor={styles.statusBarColor}
       />
-      <ScrollView>
-        {/* Header with blue background */}
-        <View
-          style={tw`${styles.headerBackground} p-6 pt-8 pb-16 rounded-b-3xl`}
-        >
-          <View style={tw`flex-row justify-between items-center`}>
-            <View>
-              <Text style={tw`${styles.headerSubtextColor} text-base`}>
-                Welcome back,
-              </Text>
-              <Text style={tw`text-3xl font-bold text-white`}>
-                {userData?.fullName || "John Doe"}
-              </Text>
-              <Text style={tw`${styles.headerSubtextColor} mt-1`}>
-                {format(new Date(), "EEEE, MMMM d, yyyy")}
-              </Text>
-            </View>
-            <View style={tw`flex-row`}>
-              {/* Theme Toggle Icon */}
-              <TouchableOpacity
-                style={tw`p-2 mr-2 ${
-                  isDark ? "bg-blue-700" : "bg-blue-400"
-                } rounded-full`}
-                onPress={toggleTheme}
-                onLongPress={handleLongPress}
-              >
-                <Ionicons
-                  name={isDark ? "moon" : "sunny"}
-                  size={22}
-                  color="#fff"
-                />
-                {followSystem && (
-                  <View
-                    style={tw`absolute -top-1 -right-1 w-3 h-3 bg-green-400 rounded-full border border-white`}
-                  />
-                )}
-              </TouchableOpacity>
 
-              <TouchableOpacity
-                style={tw`p-2 mr-2 ${
-                  isDark ? "bg-blue-700" : "bg-blue-400"
-                } rounded-full`}
-              >
-                <Ionicons name="search" size={22} color="#fff" />
-              </TouchableOpacity>
-              <TouchableOpacity
-                style={tw`p-2 ${
-                  isDark ? "bg-blue-700" : "bg-blue-400"
-                } rounded-full`}
-              >
-                <Ionicons name="notifications-outline" size={22} color="#fff" />
-              </TouchableOpacity>
-            </View>
+      {/* Fixed Header Section */}
+      <View style={tw`${styles.headerBackground} p-6 pt-8 pb-16 rounded-b-3xl`}>
+        <View style={tw`flex-row justify-between items-center`}>
+          <View>
+            <Text style={tw`${styles.headerSubtextColor} text-base`}>
+              Welcome back,
+            </Text>
+            <Text style={tw`text-3xl font-bold text-white`}>
+              {userData?.fullName || "John Doe"}
+            </Text>
+            <Text style={tw`${styles.headerSubtextColor} mt-1`}>
+              {format(new Date(), "EEEE, MMMM d, yyyy")}
+            </Text>
+          </View>
+          <View style={tw`flex-row`}>
+            {/* Theme Toggle Icon */}
+            <TouchableOpacity
+              style={tw`p-2 mr-2 ${
+                isDark ? "bg-blue-700" : "bg-blue-400"
+              } rounded-full`}
+              onPress={toggleTheme}
+              onLongPress={handleLongPress}
+            >
+              <Ionicons
+                name={isDark ? "moon" : "sunny"}
+                size={22}
+                color="#fff"
+              />
+              {followSystem && (
+                <View
+                  style={tw`absolute -top-1 -right-1 w-3 h-3 bg-green-400 rounded-full border border-white`}
+                />
+              )}
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={tw`p-2 mr-2 ${
+                isDark ? "bg-blue-700" : "bg-blue-400"
+              } rounded-full`}
+            >
+              <Ionicons name="search" size={22} color="#fff" />
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={tw`p-2 ${
+                isDark ? "bg-blue-700" : "bg-blue-400"
+              } rounded-full`}
+            >
+              <Ionicons name="notifications-outline" size={22} color="#fff" />
+            </TouchableOpacity>
           </View>
         </View>
+      </View>
 
-        <View style={tw`px-4 -mt-10`}>
-          {/* Current Residence Card - Elevated on top of blue section */}
+      {/* Scrollable Content */}
+      <ScrollView style={tw`flex-1 px-4 -mt-12`}>
+        <View style={tw``}>
+          {/* Current Residence Card */}
           <Card style={`mb-4 shadow-lg ${styles.cardBackground}`}>
             <View style={tw`items-center py-4`}>
               <View
@@ -307,15 +307,7 @@ const HomeScreen = ({ navigation }) => {
                 textColor={styles.textColor}
                 onPress={() => navigation.navigate("Profile")}
               />
-              <QuickActionButton
-                icon="calendar-outline"
-                label="Amenities"
-                color={isDark ? "#ef9a9a" : "#e53935"}
-                bgColor={isDark ? "bg-red-900" : "bg-red-100"}
-                cardBg={styles.cardBackground}
-                textColor={styles.textColor}
-                onPress={() => alert("Amenities Booking")}
-              />
+
               <QuickActionButton
                 icon="document-text-outline"
                 label="Lease"

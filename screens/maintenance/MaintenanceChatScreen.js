@@ -17,15 +17,45 @@ import {
 } from "react-native";
 import tw from "twrnc";
 import Card from "../../components/Card";
+import { useTheme } from "../../context/ThemeContext";
 
 const MaintenanceChatScreen = ({ route, navigation }) => {
-  const { chatType, chatData } = route.params; // 'group' or 'direct'
+  const { chatType = "direct", chatData = { name: "Chat", messages: [] } } =
+    route.params || {};
   const [message, setMessage] = useState("");
   const [chatMessages, setChatMessages] = useState(chatData.messages || []);
   const [showAttachmentOptions, setShowAttachmentOptions] = useState(false);
   const [showInfoPanel, setShowInfoPanel] = useState(false);
   const [showMembersModal, setShowMembersModal] = useState(false);
   const flatListRef = useRef(null);
+  const { theme } = useTheme();
+
+  const isDark = theme === "dark";
+  // Theme specific styles
+  const styles = {
+    background: isDark ? "bg-gray-900" : "bg-white",
+    statusBarStyle: isDark ? "light-content" : "dark-content",
+    statusBarColor: isDark ? "#121212" : "#f9f9f9",
+    cardBackground: isDark ? "bg-gray-800" : "bg-white",
+    textColor: isDark ? "text-white" : "text-gray-800",
+    subtextColor: isDark ? "text-gray-400" : "text-gray-600",
+    borderColor: isDark ? "border-gray-700" : "border-gray-200",
+    dividerColor: isDark ? "bg-gray-700" : "bg-gray-200",
+    inputBackground: isDark ? "bg-gray-700" : "bg-gray-100",
+    inputText: isDark ? "text-white" : "text-black",
+    placeholderText: isDark ? "text-gray-400" : "text-gray-500",
+    sentMessageBg: isDark ? "bg-blue-600" : "bg-blue-500",
+    receivedMessageBg: isDark ? "bg-gray-700" : "bg-gray-200",
+    sentMessageText: "text-white",
+    receivedMessageText: isDark ? "text-white" : "text-black",
+    modalBackground: isDark ? "bg-gray-800" : "bg-white",
+    modalHandle: isDark ? "bg-gray-600" : "bg-gray-300",
+    iconColor: isDark ? "#90caf9" : "#3498db",
+    dangerButton: isDark ? "bg-red-600" : "bg-red-500",
+    dangerText: "text-white",
+    onlineIndicator: isDark ? "bg-green-400" : "bg-green-500",
+    offlineIndicator: isDark ? "bg-gray-500" : "bg-gray-400",
+  };
 
   // Mock maintenance team members
   const maintenanceTeam = [
@@ -45,7 +75,7 @@ const MaintenanceChatScreen = ({ route, navigation }) => {
               onPress={() => setShowMembersModal(true)}
               style={tw`p-2 mr-1`}
             >
-              <Ionicons name="people" size={24} color="#3498db" />
+              <Ionicons name="people" size={24} color={styles.iconColor} />
             </TouchableOpacity>
           )}
           <TouchableOpacity
@@ -55,13 +85,13 @@ const MaintenanceChatScreen = ({ route, navigation }) => {
             <Ionicons
               name="information-circle-outline"
               size={24}
-              color="#3498db"
+              color={styles.iconColor}
             />
           </TouchableOpacity>
         </View>
       ),
     });
-  }, [navigation, chatData, chatType]);
+  }, [navigation, chatData, chatType, styles.iconColor]);
 
   const sendMessage = () => {
     if (message.trim() === "") return;
@@ -74,7 +104,7 @@ const MaintenanceChatScreen = ({ route, navigation }) => {
         minute: "2-digit",
       }),
       isSent: true,
-      sender: "You", // For group chats
+      sender: "You",
     };
 
     setChatMessages([newMessage, ...chatMessages]);
@@ -104,22 +134,24 @@ const MaintenanceChatScreen = ({ route, navigation }) => {
       <View
         style={tw`my-1 mx-3 max-w-3/4 ${
           item.isSent
-            ? "self-end bg-blue-500 rounded-tl-xl rounded-bl-xl rounded-tr-xl"
-            : "self-start bg-gray-200 rounded-tr-xl rounded-br-xl rounded-tl-xl"
+            ? `${styles.sentMessageBg} rounded-tl-xl rounded-bl-xl rounded-tr-xl`
+            : `${styles.receivedMessageBg} rounded-tr-xl rounded-br-xl rounded-tl-xl`
         }`}
       >
         <View style={tw`p-3`}>
           {chatType === "group" && !item.isSent && (
             <Text
               style={tw`text-xs font-semibold ${
-                item.isSent ? "text-blue-100" : "text-gray-700"
+                item.isSent ? "text-blue-100" : styles.subtextColor
               } mb-1`}
             >
               {item.sender}
             </Text>
           )}
           <Text
-            style={tw`text-base ${item.isSent ? "text-white" : "text-black"}`}
+            style={tw`text-base ${
+              item.isSent ? styles.sentMessageText : styles.receivedMessageText
+            }`}
           >
             {item.text}
           </Text>
@@ -133,7 +165,7 @@ const MaintenanceChatScreen = ({ route, navigation }) => {
         </View>
         <Text
           style={tw`text-xs ${
-            item.isSent ? "text-blue-100 self-end" : "text-gray-500"
+            item.isSent ? "text-blue-100 self-end" : styles.subtextColor
           } px-3 pb-1`}
         >
           {item.time}
@@ -153,9 +185,15 @@ const MaintenanceChatScreen = ({ route, navigation }) => {
         style={tw`flex-1 bg-black bg-opacity-50`}
         onPress={() => setShowAttachmentOptions(false)}
       >
-        <View style={tw`absolute bottom-0 w-full bg-white rounded-t-3xl`}>
-          <View style={tw`w-16 h-1 bg-gray-300 rounded-full mx-auto my-3`} />
-          <Text style={tw`text-xl font-bold text-center mb-4`}>
+        <View
+          style={tw`absolute bottom-0 w-full ${styles.modalBackground} rounded-t-3xl`}
+        >
+          <View
+            style={tw`w-16 h-1 ${styles.modalHandle} rounded-full mx-auto my-3`}
+          />
+          <Text
+            style={tw`text-xl font-bold text-center mb-4 ${styles.textColor}`}
+          >
             Add Attachment
           </Text>
 
@@ -183,11 +221,15 @@ const MaintenanceChatScreen = ({ route, navigation }) => {
               }}
             >
               <View
-                style={tw`w-16 h-16 bg-blue-100 rounded-full items-center justify-center mb-2`}
+                style={tw`w-16 h-16 ${
+                  isDark ? "bg-blue-900" : "bg-blue-100"
+                } rounded-full items-center justify-center mb-2`}
               >
-                <Ionicons name="camera" size={30} color="#3498db" />
+                <Ionicons name="camera" size={30} color={styles.iconColor} />
               </View>
-              <Text style={tw`text-sm font-medium`}>Camera</Text>
+              <Text style={tw`text-sm font-medium ${styles.textColor}`}>
+                Camera
+              </Text>
             </TouchableOpacity>
 
             <TouchableOpacity
@@ -197,11 +239,19 @@ const MaintenanceChatScreen = ({ route, navigation }) => {
               }}
             >
               <View
-                style={tw`w-16 h-16 bg-purple-100 rounded-full items-center justify-center mb-2`}
+                style={tw`w-16 h-16 ${
+                  isDark ? "bg-purple-900" : "bg-purple-100"
+                } rounded-full items-center justify-center mb-2`}
               >
-                <Ionicons name="image" size={30} color="#9c27b0" />
+                <Ionicons
+                  name="image"
+                  size={30}
+                  color={isDark ? "#ba68c8" : "#9c27b0"}
+                />
               </View>
-              <Text style={tw`text-sm font-medium`}>Photos</Text>
+              <Text style={tw`text-sm font-medium ${styles.textColor}`}>
+                Photos
+              </Text>
             </TouchableOpacity>
 
             <TouchableOpacity
@@ -211,11 +261,19 @@ const MaintenanceChatScreen = ({ route, navigation }) => {
               }}
             >
               <View
-                style={tw`w-16 h-16 bg-orange-100 rounded-full items-center justify-center mb-2`}
+                style={tw`w-16 h-16 ${
+                  isDark ? "bg-orange-900" : "bg-orange-100"
+                } rounded-full items-center justify-center mb-2`}
               >
-                <Ionicons name="document" size={30} color="#e67e22" />
+                <Ionicons
+                  name="document"
+                  size={30}
+                  color={isDark ? "#ffb74d" : "#e67e22"}
+                />
               </View>
-              <Text style={tw`text-sm font-medium`}>Document</Text>
+              <Text style={tw`text-sm font-medium ${styles.textColor}`}>
+                Document
+              </Text>
             </TouchableOpacity>
 
             <TouchableOpacity
@@ -226,11 +284,19 @@ const MaintenanceChatScreen = ({ route, navigation }) => {
               }}
             >
               <View
-                style={tw`w-16 h-16 bg-red-100 rounded-full items-center justify-center mb-2`}
+                style={tw`w-16 h-16 ${
+                  isDark ? "bg-red-900" : "bg-red-100"
+                } rounded-full items-center justify-center mb-2`}
               >
-                <Ionicons name="construct" size={30} color="#e53935" />
+                <Ionicons
+                  name="construct"
+                  size={30}
+                  color={isDark ? "#ef9a9a" : "#e53935"}
+                />
               </View>
-              <Text style={tw`text-sm font-medium`}>Job Reference</Text>
+              <Text style={tw`text-sm font-medium ${styles.textColor}`}>
+                Job Reference
+              </Text>
             </TouchableOpacity>
 
             <TouchableOpacity
@@ -240,11 +306,19 @@ const MaintenanceChatScreen = ({ route, navigation }) => {
               }}
             >
               <View
-                style={tw`w-16 h-16 bg-green-100 rounded-full items-center justify-center mb-2`}
+                style={tw`w-16 h-16 ${
+                  isDark ? "bg-green-900" : "bg-green-100"
+                } rounded-full items-center justify-center mb-2`}
               >
-                <Ionicons name="location" size={30} color="#2ecc71" />
+                <Ionicons
+                  name="location"
+                  size={30}
+                  color={isDark ? "#81c784" : "#2ecc71"}
+                />
               </View>
-              <Text style={tw`text-sm font-medium`}>Location</Text>
+              <Text style={tw`text-sm font-medium ${styles.textColor}`}>
+                Location
+              </Text>
             </TouchableOpacity>
           </ScrollView>
         </View>
@@ -263,9 +337,15 @@ const MaintenanceChatScreen = ({ route, navigation }) => {
         style={tw`flex-1 bg-black bg-opacity-50`}
         onPress={() => setShowInfoPanel(false)}
       >
-        <View style={tw`absolute bottom-0 w-full bg-white rounded-t-3xl`}>
-          <View style={tw`w-16 h-1 bg-gray-300 rounded-full mx-auto my-3`} />
-          <Text style={tw`text-xl font-bold text-center mb-4`}>
+        <View
+          style={tw`absolute bottom-0 w-full ${styles.modalBackground} rounded-t-3xl`}
+        >
+          <View
+            style={tw`w-16 h-1 ${styles.modalHandle} rounded-full mx-auto my-3`}
+          />
+          <Text
+            style={tw`text-xl font-bold text-center mb-4 ${styles.textColor}`}
+          >
             {chatType === "group" ? "Group Info" : "Chat Info"}
           </Text>
 
@@ -274,17 +354,31 @@ const MaintenanceChatScreen = ({ route, navigation }) => {
               <View style={tw`p-4 items-center`}>
                 <View
                   style={tw`w-20 h-20 ${
-                    chatType === "group" ? "bg-green-100" : "bg-blue-100"
+                    chatType === "group"
+                      ? isDark
+                        ? "bg-green-900"
+                        : "bg-green-100"
+                      : isDark
+                      ? "bg-blue-900"
+                      : "bg-blue-100"
                   } rounded-full items-center justify-center mb-3`}
                 >
                   <Ionicons
                     name={chatType === "group" ? "people" : "person"}
                     size={40}
-                    color={chatType === "group" ? "#2ecc71" : "#3498db"}
+                    color={
+                      chatType === "group"
+                        ? isDark
+                          ? "#81c784"
+                          : "#2ecc71"
+                        : styles.iconColor
+                    }
                   />
                 </View>
-                <Text style={tw`text-xl font-bold`}>{chatData.name}</Text>
-                <Text style={tw`text-gray-500`}>
+                <Text style={tw`text-xl font-bold ${styles.textColor}`}>
+                  {chatData.name}
+                </Text>
+                <Text style={tw`${styles.subtextColor}`}>
                   {chatType === "group"
                     ? "Maintenance Team"
                     : chatData.role || "Tenant"}
@@ -294,15 +388,21 @@ const MaintenanceChatScreen = ({ route, navigation }) => {
 
             {chatType === "group" && (
               <>
-                <Text style={tw`text-lg font-semibold mb-2`}>Description</Text>
-                <Text style={tw`text-gray-600 mb-4`}>
+                <Text
+                  style={tw`text-lg font-semibold mb-2 ${styles.textColor}`}
+                >
+                  Description
+                </Text>
+                <Text style={tw`${styles.subtextColor} mb-4`}>
                   {chatData.description ||
                     "Team coordination for maintenance requests and building upkeep"}
                 </Text>
               </>
             )}
 
-            <Text style={tw`text-lg font-semibold mb-2`}>Actions</Text>
+            <Text style={tw`text-lg font-semibold mb-2 ${styles.textColor}`}>
+              Actions
+            </Text>
             <View style={tw`flex-row justify-between mb-4`}>
               <TouchableOpacity
                 style={tw`items-center`}
@@ -311,15 +411,19 @@ const MaintenanceChatScreen = ({ route, navigation }) => {
                 }}
               >
                 <View
-                  style={tw`w-12 h-12 bg-gray-100 rounded-full items-center justify-center mb-1`}
+                  style={tw`w-12 h-12 ${
+                    isDark ? "bg-gray-700" : "bg-gray-100"
+                  } rounded-full items-center justify-center mb-1`}
                 >
                   <Ionicons
                     name="notifications-off-outline"
                     size={24}
-                    color="#555"
+                    color={styles.subtextColor}
                   />
                 </View>
-                <Text style={tw`text-xs text-center`}>Mute</Text>
+                <Text style={tw`text-xs text-center ${styles.textColor}`}>
+                  Mute
+                </Text>
               </TouchableOpacity>
 
               <TouchableOpacity
@@ -329,11 +433,19 @@ const MaintenanceChatScreen = ({ route, navigation }) => {
                 }}
               >
                 <View
-                  style={tw`w-12 h-12 bg-gray-100 rounded-full items-center justify-center mb-1`}
+                  style={tw`w-12 h-12 ${
+                    isDark ? "bg-gray-700" : "bg-gray-100"
+                  } rounded-full items-center justify-center mb-1`}
                 >
-                  <Ionicons name="search-outline" size={24} color="#555" />
+                  <Ionicons
+                    name="search-outline"
+                    size={24}
+                    color={styles.subtextColor}
+                  />
                 </View>
-                <Text style={tw`text-xs text-center`}>Search</Text>
+                <Text style={tw`text-xs text-center ${styles.textColor}`}>
+                  Search
+                </Text>
               </TouchableOpacity>
 
               <TouchableOpacity
@@ -344,11 +456,19 @@ const MaintenanceChatScreen = ({ route, navigation }) => {
                 }}
               >
                 <View
-                  style={tw`w-12 h-12 bg-gray-100 rounded-full items-center justify-center mb-1`}
+                  style={tw`w-12 h-12 ${
+                    isDark ? "bg-gray-700" : "bg-gray-100"
+                  } rounded-full items-center justify-center mb-1`}
                 >
-                  <Ionicons name="construct-outline" size={24} color="#555" />
+                  <Ionicons
+                    name="construct-outline"
+                    size={24}
+                    color={styles.subtextColor}
+                  />
                 </View>
-                <Text style={tw`text-xs text-center`}>Jobs</Text>
+                <Text style={tw`text-xs text-center ${styles.textColor}`}>
+                  Jobs
+                </Text>
               </TouchableOpacity>
 
               {chatType === "direct" && (
@@ -359,15 +479,19 @@ const MaintenanceChatScreen = ({ route, navigation }) => {
                   }}
                 >
                   <View
-                    style={tw`w-12 h-12 bg-gray-100 rounded-full items-center justify-center mb-1`}
+                    style={tw`w-12 h-12 ${
+                      isDark ? "bg-gray-700" : "bg-gray-100"
+                    } rounded-full items-center justify-center mb-1`}
                   >
                     <Ionicons
                       name="person-remove-outline"
                       size={24}
-                      color="#555"
+                      color={styles.subtextColor}
                     />
                   </View>
-                  <Text style={tw`text-xs text-center`}>Block</Text>
+                  <Text style={tw`text-xs text-center ${styles.textColor}`}>
+                    Block
+                  </Text>
                 </TouchableOpacity>
               )}
 
@@ -378,17 +502,27 @@ const MaintenanceChatScreen = ({ route, navigation }) => {
                 }}
               >
                 <View
-                  style={tw`w-12 h-12 bg-gray-100 rounded-full items-center justify-center mb-1`}
+                  style={tw`w-12 h-12 ${
+                    isDark ? "bg-gray-700" : "bg-gray-100"
+                  } rounded-full items-center justify-center mb-1`}
                 >
-                  <Ionicons name="flag-outline" size={24} color="#555" />
+                  <Ionicons
+                    name="flag-outline"
+                    size={24}
+                    color={styles.subtextColor}
+                  />
                 </View>
-                <Text style={tw`text-xs text-center`}>Report</Text>
+                <Text style={tw`text-xs text-center ${styles.textColor}`}>
+                  Report
+                </Text>
               </TouchableOpacity>
             </View>
 
             {chatType === "direct" && (
               <View style={tw`mb-4`}>
-                <Text style={tw`text-lg font-semibold mb-2`}>
+                <Text
+                  style={tw`text-lg font-semibold mb-2 ${styles.textColor}`}
+                >
                   Active Requests
                 </Text>
                 <Card>
@@ -408,35 +542,47 @@ const MaintenanceChatScreen = ({ route, navigation }) => {
                     }}
                   >
                     <View
-                      style={tw`w-10 h-10 bg-orange-100 rounded-full items-center justify-center mr-3`}
+                      style={tw`w-10 h-10 ${
+                        isDark ? "bg-orange-900" : "bg-orange-100"
+                      } rounded-full items-center justify-center mr-3`}
                     >
-                      <Ionicons name="construct" size={20} color="#e67e22" />
+                      <Ionicons
+                        name="construct"
+                        size={20}
+                        color={isDark ? "#ffb74d" : "#e67e22"}
+                      />
                     </View>
                     <View style={tw`flex-1`}>
-                      <Text style={tw`font-semibold`}>Leaking Faucet</Text>
+                      <Text style={tw`font-semibold ${styles.textColor}`}>
+                        Leaking Faucet
+                      </Text>
                       <View style={tw`flex-row items-center mt-1`}>
                         <View
                           style={tw`w-2 h-2 rounded-full bg-yellow-500 mr-2`}
                         />
-                        <Text style={tw`text-gray-600 text-sm`}>
+                        <Text style={tw`${styles.subtextColor} text-sm`}>
                           In Progress
                         </Text>
                       </View>
                     </View>
-                    <Ionicons name="chevron-forward" size={20} color="#999" />
+                    <Ionicons
+                      name="chevron-forward"
+                      size={20}
+                      color={styles.subtextColor}
+                    />
                   </TouchableOpacity>
                 </Card>
               </View>
             )}
 
             <TouchableOpacity
-              style={tw`bg-red-500 py-3 rounded-full items-center`}
+              style={tw`${styles.dangerButton} py-3 rounded-full items-center`}
               onPress={() => {
                 setChatMessages([]);
                 setShowInfoPanel(false);
               }}
             >
-              <Text style={tw`text-white font-semibold`}>
+              <Text style={tw`${styles.dangerText} font-semibold`}>
                 Clear Conversation
               </Text>
             </TouchableOpacity>
@@ -457,9 +603,15 @@ const MaintenanceChatScreen = ({ route, navigation }) => {
         style={tw`flex-1 bg-black bg-opacity-50`}
         onPress={() => setShowMembersModal(false)}
       >
-        <View style={tw`absolute bottom-0 w-full bg-white rounded-t-3xl`}>
-          <View style={tw`w-16 h-1 bg-gray-300 rounded-full mx-auto my-3`} />
-          <Text style={tw`text-xl font-bold text-center mb-4`}>
+        <View
+          style={tw`absolute bottom-0 w-full ${styles.modalBackground} rounded-t-3xl`}
+        >
+          <View
+            style={tw`w-16 h-1 ${styles.modalHandle} rounded-full mx-auto my-3`}
+          />
+          <Text
+            style={tw`text-xl font-bold text-center mb-4 ${styles.textColor}`}
+          >
             Team Members
           </Text>
 
@@ -467,24 +619,32 @@ const MaintenanceChatScreen = ({ route, navigation }) => {
             {maintenanceTeam.map((member) => (
               <View
                 key={member.id}
-                style={tw`flex-row items-center p-3 border-b border-gray-100`}
+                style={tw`flex-row items-center p-3 border-b ${styles.borderColor}`}
               >
                 <View
-                  style={tw`w-12 h-12 bg-blue-100 rounded-full items-center justify-center mr-3`}
+                  style={tw`w-12 h-12 ${
+                    isDark ? "bg-blue-900" : "bg-blue-100"
+                  } rounded-full items-center justify-center mr-3`}
                 >
-                  <Ionicons name="person" size={24} color="#3498db" />
+                  <Ionicons name="person" size={24} color={styles.iconColor} />
                 </View>
                 <View style={tw`flex-1`}>
-                  <Text style={tw`font-medium`}>{member.name}</Text>
-                  <Text style={tw`text-gray-500 text-sm`}>{member.role}</Text>
+                  <Text style={tw`font-medium ${styles.textColor}`}>
+                    {member.name}
+                  </Text>
+                  <Text style={tw`${styles.subtextColor} text-sm`}>
+                    {member.role}
+                  </Text>
                 </View>
                 <View style={tw`flex-row items-center`}>
                   <View
                     style={tw`w-2 h-2 rounded-full ${
-                      member.online ? "bg-green-500" : "bg-gray-400"
+                      member.online
+                        ? styles.onlineIndicator
+                        : styles.offlineIndicator
                     } mr-2`}
                   />
-                  <Text style={tw`text-gray-500 text-xs`}>
+                  <Text style={tw`${styles.subtextColor} text-xs`}>
                     {member.online ? "Online" : "Offline"}
                   </Text>
                 </View>
@@ -504,8 +664,11 @@ const MaintenanceChatScreen = ({ route, navigation }) => {
   );
 
   return (
-    <SafeAreaView style={tw`flex-1 bg-white`}>
-      <StatusBar barStyle="dark-content" />
+    <SafeAreaView style={tw`flex-1 ${styles.background}`}>
+      <StatusBar
+        barStyle={styles.statusBarStyle}
+        backgroundColor={styles.statusBarColor}
+      />
 
       <KeyboardAvoidingView
         behavior={Platform.OS === "ios" ? "padding" : "height"}
@@ -518,18 +681,25 @@ const MaintenanceChatScreen = ({ route, navigation }) => {
           data={chatMessages}
           renderItem={renderMessage}
           keyExtractor={(item) => item.id}
-          inverted={true}
           contentContainerStyle={tw`flex-grow justify-end pt-4`}
           style={tw`flex-1`}
           ListEmptyComponent={() => (
             <View style={tw`flex-1 items-center justify-center py-12`}>
               <View
-                style={tw`w-16 h-16 bg-blue-100 rounded-full items-center justify-center mb-4`}
+                style={tw`w-16 h-16 ${
+                  isDark ? "bg-blue-900" : "bg-blue-100"
+                } rounded-full items-center justify-center mb-4`}
               >
-                <Ionicons name="chatbubble-outline" size={32} color="#3498db" />
+                <Ionicons
+                  name="chatbubble-outline"
+                  size={32}
+                  color={styles.iconColor}
+                />
               </View>
-              <Text style={tw`text-gray-500 text-center`}>No messages yet</Text>
-              <Text style={tw`text-gray-400 text-center mt-1`}>
+              <Text style={tw`${styles.subtextColor} text-center`}>
+                No messages yet
+              </Text>
+              <Text style={tw`${styles.subtextColor} text-center mt-1`}>
                 Start the conversation!
               </Text>
             </View>
@@ -538,23 +708,24 @@ const MaintenanceChatScreen = ({ route, navigation }) => {
 
         {/* Message input section */}
         <View
-          style={tw`border-t border-gray-200 px-2 py-2 flex-row items-center`}
+          style={tw`border-t ${styles.borderColor} px-2 py-2 flex-row items-center`}
         >
           <TouchableOpacity
             onPress={() => setShowAttachmentOptions(true)}
             style={tw`p-2 mr-1`}
           >
-            <Ionicons name="add-circle" size={24} color="#3498db" />
+            <Ionicons name="add-circle" size={24} color={styles.iconColor} />
           </TouchableOpacity>
 
           <View
-            style={tw`flex-1 flex-row items-center bg-gray-100 rounded-full px-3 py-2 mr-2`}
+            style={tw`flex-1 flex-row items-center ${styles.inputBackground} rounded-full px-3 py-2 mr-2`}
           >
             <TextInput
-              style={tw`flex-1 text-base`}
+              style={tw`flex-1 text-base ${styles.inputText}`}
               value={message}
               onChangeText={setMessage}
               placeholder="Type a message..."
+              placeholderTextColor={styles.placeholderText}
               multiline
               maxHeight={100}
             />
