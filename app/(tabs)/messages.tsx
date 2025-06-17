@@ -8,17 +8,7 @@ import {
   TouchableOpacity,
   TextInput,
 } from 'react-native';
-import { 
-  MessageCircle, 
-  Users, 
-  Search, 
-  Plus, 
-  Wrench, 
-  Building,
-  User,
-  Clock,
-  CheckCircle
-} from 'lucide-react-native';
+import { MessageCircle, Users, Search, Plus, Wrench, Building, User, Clock, CircleCheck as CheckCircle } from 'lucide-react-native';
 
 export default function MessagesScreen() {
   const [activeTab, setActiveTab] = useState('conversations');

@@ -10,18 +10,7 @@ import {
   Dimensions,
 } from 'react-native';
 import { format } from 'date-fns';
-import { 
-  Home, 
-  Calendar, 
-  DollarSign, 
-  Wrench, 
-  Bell, 
-  Search,
-  Sun,
-  Moon,
-  ChevronRight,
-  MapPin
-} from 'lucide-react-native';
+import { Chrome as Home, Calendar, DollarSign, Wrench, Bell, Search, Sun, Moon, ChevronRight, MapPin } from 'lucide-react-native';
 
 const { width } = Dimensions.get('window');
 

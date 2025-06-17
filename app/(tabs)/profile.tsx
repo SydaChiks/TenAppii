@@ -11,20 +11,7 @@ import {
   Alert,
 } from 'react-native';
 import { router } from 'expo-router';
-import { 
-  User, 
-  Settings, 
-  Bell, 
-  Shield, 
-  CreditCard, 
-  HelpCircle, 
-  LogOut,
-  Edit3,
-  Home,
-  Calendar,
-  FileText,
-  ChevronRight
-} from 'lucide-react-native';
+import { User, Settings, Bell, Shield, CreditCard, CircleHelp as HelpCircle, LogOut, CreditCard as Edit3, Chrome as Home, Calendar, FileText, ChevronRight } from 'lucide-react-native';
 
 export default function ProfileScreen() {
   const [notificationsEnabled, setNotificationsEnabled] = useState(true);

@@ -8,16 +8,7 @@ import {
   TouchableOpacity,
   Alert,
 } from 'react-native';
-import { 
-  CreditCard, 
-  Calendar, 
-  DollarSign, 
-  CheckCircle, 
-  Clock, 
-  Upload,
-  Plus,
-  FileText
-} from 'lucide-react-native';
+import { CreditCard, Calendar, DollarSign, CircleCheck as CheckCircle, Clock, Upload, Plus, FileText } from 'lucide-react-native';
 
 export default function PaymentsScreen() {
   const [selectedTab, setSelectedTab] = useState('payments');
