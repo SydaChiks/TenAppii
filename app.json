@@ -26,12 +26,16 @@
       "package": "com.sir_bento.tenApp"
     },
     "web": {
-      "favicon": "./assets/favicon.png"
+      "favicon": "./assets/favicon.png",
+      "output": "server"
     },
     "extra": {
       "eas": {
         "projectId": "88652443-0b04-4e71-afab-0fa409c37c8d"
       }
-    }
+    },
+    "plugins": [
+      "expo-router"
+    ]
   }
 }
